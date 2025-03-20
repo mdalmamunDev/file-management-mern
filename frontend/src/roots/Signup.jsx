@@ -1,8 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import icon from "./../assets/img/app-icon.png";
 import { Link } from "react-router-dom";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function Signup() {
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
+    
+    try {
+      const response = await axios.post('http://localhost:3000/api/auth/register', {
+        userName,
+        email,
+        password,
+        passwordConfirm,
+      });
+
+      setSuccessMessage(response.data?.message);
+      setTimeout(() => navigate('/'), 3000);
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || 'Something went wrong');
+    }
+  };
+
   return (
     <>
       <div className="container d-flex justify-content-center align-items-center min-vh-100">
@@ -15,8 +45,11 @@ export default function Signup() {
               className="mb-4"
               style={{ width: "100px", height: "auto" }}
             />
-            <h2 className="mb-4">Login</h2>
-            <form className=" text-start">
+            <h2 className="mb-4">Sign Up</h2>
+            <p className="text-danger">{errorMessage}</p>
+            <p className="text-success">{successMessage}</p>
+
+            <form onSubmit={handleSubmit} className=" text-start">
               <div className="form-group mb-3">
                 <label htmlFor="username">User name</label>
                 <input
@@ -24,6 +57,8 @@ export default function Signup() {
                   className="form-control"
                   id="username"
                   placeholder="User name"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
                   required
                 />
               </div>
@@ -35,6 +70,8 @@ export default function Signup() {
                   id="exampleInputEmail1"
                   aria-describedby="emailHelp"
                   placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
                 <small id="emailHelp" className="form-text text-muted">
@@ -48,6 +85,8 @@ export default function Signup() {
                   className="form-control"
                   id="exampleInputPassword1"
                   placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
@@ -58,6 +97,8 @@ export default function Signup() {
                   className="form-control"
                   id="exampleInputPassword12"
                   placeholder="Password Confirm"
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
                   required
                 />
               </div>
@@ -78,7 +119,7 @@ export default function Signup() {
                   className="btn btn-primary btn-block"
                   style={{ width: 200 }}
                 >
-                  Log In
+                  Sign Up
                 </button>
                 <p className="mt-2">
                   Already have account? <Link to="/">Login</Link>

@@ -6,6 +6,7 @@ import axios from "axios";
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,7 +19,7 @@ export default function Login() {
       localStorage.setItem('token', response.data.token);
       navigate('/profile');
     } catch (error) {
-      console.error(error);
+      setErrorMessage(error.response?.data?.message || 'Something went wrong');
     }
   };
 
@@ -36,6 +37,8 @@ export default function Login() {
               style={{ width: "100px", height: "auto" }} 
             />
             <h2 className="mb-4">Login</h2>
+            <p className="text-danger">{errorMessage}</p>
+            
             <form className="text-start" onSubmit={handleSubmit}>
               <div className="form-group mb-3">
                 <label htmlFor="exampleInputEmail1">Email</label>
