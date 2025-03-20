@@ -1,6 +1,7 @@
 import React from "react";
 import { Folder, FileEarmark, Plus, Upload, Image, Film, MusicNote, FileText, House, Person, Clock, Lock, ThreeDots, ThreeDotsVertical, Heart, HeartFill } from "react-bootstrap-icons";
 import icon from "./../assets/img/app-icon.png";
+import { Link } from "react-router-dom";
 
 const recentItems = [
   { name: "Presentation.pptx", time: "10 mins ago", icon: <FileEarmark size={30} className="text-primary" /> },
@@ -47,7 +48,7 @@ export default () => {
         {/* Breadcrumb Navigation */}
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
-            <li className="breadcrumb-item active" aria-current="page">Home</li>
+            <Link to={'/my_files'} className="breadcrumb-item active text-decoration-none" aria-current="page">Home</Link>
             <li className="breadcrumb-item active" aria-current="page">Item List</li>
           </ol>
         </nav>

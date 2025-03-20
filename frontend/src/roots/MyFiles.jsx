@@ -91,6 +91,7 @@ export default () => {
                   </summary>
                   <div className="dropdown-menu show position-absolute end-0 mt-1 p-2 shadow-sm rounded">
                     <a className="dropdown-item" href="#">Favorite</a>
+                    <a className="dropdown-item" href="#">Details</a>
                     <a className="dropdown-item" href="#">Rename</a>
                     <a className="dropdown-item" href="#">Copy</a>
                     <a className="dropdown-item text-danger" href="#">Delete</a>
