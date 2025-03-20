@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import proRouter from './routes/programmer.route.js';
+import authRoutes from './routes/auth.route.js';
 import cors from 'cors';
 
 const app = express()
@@ -29,6 +30,7 @@ app.get('/', (req, res) => {
   res.send('ProgrammersVilla')
 });
 app.use("/programmer", proRouter);
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

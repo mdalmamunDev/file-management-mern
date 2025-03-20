@@ -1,16 +1,14 @@
-import './App.css'
-import Footer from './comps/Footer'
-import Header from './comps/Header'
-import Pro from './roots/Pro'
-import { useEffect, useState } from 'react'
-import axios from 'axios';
-import Home from './roots/Home'
-import AddPro from './roots/AddPro'
-import { Toaster } from 'react-hot-toast'
+import "./App.css";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Toaster } from "react-hot-toast";
+import Login from "./roots/Login";
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import Signup from "./roots/Signup";
+import PasswordForgot from "./roots/PasswordForgot";
 
 function App() {
-
-  const [root, setRoot] = useState('Home');
+  const [root, setRoot] = useState("Home");
   const [proList, setProList] = useState([]);
   const [pro, setPro] = useState();
 
@@ -27,27 +25,18 @@ function App() {
   }, []);
 
   return (
-    <>
-      <Header setRoot={setRoot} />
-      {(() => {
-        switch (root) {
-          case 'Pro':
-            return <Pro setRoot={setRoot} proList={proList} setProList={setProList} pro={pro} setPro={setPro} />;
-          case 'AddPro':
-            return <AddPro proList={proList} setProList={setProList} setRoot={setRoot} setPro={setPro} />;
-          case 'EditPro':
-            return <AddPro proList={proList} setProList={setProList} setRoot={setRoot} setPro={setPro} pro={pro} />;
-          default:
-            return <Home proList={proList} setRoot={setRoot} setPro={setPro} />;
-        }
-      })()}
-      <Footer />
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-      />
-    </>
-  )
+    <Router>
+      {/* <Header setRoot={setRoot} /> */}
+  
+      {/* <Footer /> */}
+      <Toaster position="top-center" reverseOrder={false} />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/password_forgot" element={<PasswordForgot />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
