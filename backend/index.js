@@ -27,10 +27,10 @@ try {
 
 //defining routes
 app.get('/', (req, res) => {
-  res.send('ProgrammersVilla')
+  res.send('Hello file manager')
 });
 app.use("/programmer", proRouter);
-app.use('/api/auth', authRoutes);
+app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
