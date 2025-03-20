@@ -1,6 +1,4 @@
 import "./App.css";
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { Toaster } from "react-hot-toast";
 import Login from "./roots/Login";
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
@@ -9,23 +7,9 @@ import PasswordForgot from "./roots/PasswordForgot";
 import MyFiles from "./roots/MyFiles";
 import FileList from "./roots/FileList";
 import CalendarFileList from "./roots/CalendarFileList";
+import Profile from "./roots/Profile";
 
 function App() {
-  const [root, setRoot] = useState("Home");
-  const [proList, setProList] = useState([]);
-  const [pro, setPro] = useState();
-
-  useEffect(() => {
-    const getProList = async () => {
-      try {
-        const res = await axios.get("http://localhost:3000/programmer");
-        setProList(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getProList();
-  }, []);
 
   return (
     <Router>
@@ -40,6 +24,7 @@ function App() {
         <Route path="/my_files" element={<MyFiles />} />
         <Route path="/file_list" element={<FileList />} />
         <Route path="/file_calander" element={<CalendarFileList />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );
