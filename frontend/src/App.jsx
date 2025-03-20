@@ -6,6 +6,7 @@ import Login from "./roots/Login";
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import Signup from "./roots/Signup";
 import PasswordForgot from "./roots/PasswordForgot";
+import MyFiles from "./roots/MyFiles";
 
 function App() {
   const [root, setRoot] = useState("Home");
@@ -34,6 +35,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/password_forgot" element={<PasswordForgot />} />
+        <Route path="/my_files" element={<MyFiles />} />
       </Routes>
     </Router>
   );

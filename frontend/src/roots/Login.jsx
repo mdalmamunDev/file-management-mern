@@ -17,7 +17,7 @@ export default function Login() {
         password,
       });
       localStorage.setItem('token', response.data.token);
-      navigate('/profile');
+      navigate('/my_files');
     } catch (error) {
       setErrorMessage(error.response?.data?.message || 'Something went wrong');
     }
