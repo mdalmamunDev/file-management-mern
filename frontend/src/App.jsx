@@ -8,6 +8,7 @@ import Signup from "./roots/Signup";
 import PasswordForgot from "./roots/PasswordForgot";
 import MyFiles from "./roots/MyFiles";
 import FileList from "./roots/FileList";
+import CalendarFileList from "./roots/CalendarFileList";
 
 function App() {
   const [root, setRoot] = useState("Home");
@@ -38,6 +39,7 @@ function App() {
         <Route path="/password_forgot" element={<PasswordForgot />} />
         <Route path="/my_files" element={<MyFiles />} />
         <Route path="/file_list" element={<FileList />} />
+        <Route path="/file_calander" element={<CalendarFileList />} />
       </Routes>
     </Router>
   );
