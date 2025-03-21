@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import icon from "./../assets/img/app-icon.png";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useGlobal } from "../context/GlobalProvider";
 
 export default function Login() {
+  const {urlGenerate} = useGlobal();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -12,7 +15,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', {
+      const response = await axios.post(urlGenerate('api/auth/login'), {
         email,
         password,
       });

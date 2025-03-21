@@ -1,16 +1,26 @@
 import jwt from 'jsonwebtoken';
+import User from '../models/user.model.js';
 
-export const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  if (!token) {
-    return res.status(401).json({ message: "Access denied, no token provided" });
-  }
-
+export const authMiddleware = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, 'your_jwt_secret'); // Replace with your secret
-    req.user = decoded;
-    next();
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ message: 'Access denied. No token provided.' });
+    }
+
+    // Verify the token
+    const decoded = jwt.verify(token, 'your_jwt_secret');
+
+    // Fetch the user from DB
+    const user = await User.findById(decoded.id).select('-password'); // Exclude password
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Attach user to request
+    req.user = user;
+    next(); // Proceed to next middleware or route handler
   } catch (error) {
-    res.status(401).json({ message: "Invalid or expired token" });
+    res.status(401).json({ message: 'Invalid token' });
   }
 };

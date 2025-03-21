@@ -24,12 +24,12 @@ export const createItem = async (req, res) => {
                 return res.status(400).json({ error: "File upload failed" });
             }
 
-            const { name, user_id, parent_id, is_favorite, size, type } = req.body;
+            const { name, parent_id, is_favorite, size, type } = req.body;
 
             // Create item with file details (if file exists)
             const newItem = new Item({
                 name,
-                user_id,
+                user_id: req.user ? req.user.id : null,
                 parent_id: parent_id || null,
                 path: req.file ? `/uploads/${req.file.filename}` : null,
                 is_favorite: is_favorite || false,
@@ -40,6 +40,30 @@ export const createItem = async (req, res) => {
             await newItem.save();
             res.status(201).json({ message: "Item created successfully", item: newItem });
         });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+// Create an Item
+export const createFolder = async (req, res) => {
+    try {
+        // res.status(201).json({ message: "Item created successfully", item: req.body });
+
+
+        const { name, parent_id, is_favorite } = req.body;
+
+        // // Create item with file details (if file exists)
+        const newItem = new Item({
+            name,
+            user_id: req.user ? req.user.id : null,
+            parent_id: parent_id || null,
+            is_favorite: is_favorite || false,
+            type: 'folder',
+        });
+
+        await newItem.save();
+        res.status(201).json({ message: "Item created successfully", item: newItem });
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

@@ -3,8 +3,11 @@ import icon from "./../assets/img/app-icon.png";
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useGlobal } from "../context/GlobalProvider";
 
 export default function Signup() {
+  const {urlGenerate} = useGlobal();
+
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +22,7 @@ export default function Signup() {
     setSuccessMessage('');
     
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/register', {
+      const response = await axios.post(urlGenerate('api/auth/register'), {
         userName,
         email,
         password,

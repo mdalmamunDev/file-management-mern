@@ -8,25 +8,28 @@ import MyFiles from "./roots/MyFiles";
 import FileList from "./roots/FileList";
 import CalendarFileList from "./roots/CalendarFileList";
 import Profile from "./roots/Profile";
+import { GlobalProvider } from "./context/GlobalProvider";
 
 function App() {
 
   return (
-    <Router>
-      {/* <Header setRoot={setRoot} /> */}
-  
-      {/* <Footer /> */}
-      <Toaster position="top-center" reverseOrder={false} />
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/password_forgot" element={<PasswordForgot />} />
-        <Route path="/my_files" element={<MyFiles />} />
-        <Route path="/file_list" element={<FileList />} />
-        <Route path="/file_calander" element={<CalendarFileList />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
-    </Router>
+    <GlobalProvider>
+      <Router>
+        {/* <Header setRoot={setRoot} /> */}
+
+        {/* <Footer /> */}
+        <Toaster position="top-center" reverseOrder={false} />
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/password_forgot" element={<PasswordForgot />} />
+          <Route path="/my_files" element={<MyFiles />} />
+          <Route path="/file_list" element={<FileList />} />
+          <Route path="/file_calander" element={<CalendarFileList />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </Router>
+    </GlobalProvider>
   );
 }
 

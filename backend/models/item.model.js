@@ -2,15 +2,14 @@ import mongoose from 'mongoose';
 import AutoIncrement from 'mongoose-sequence';
 
 const ItemSchema = new mongoose.Schema({
-    id: Number, // Auto-incremented field
     name: {
         type: String,
-        required: false
+        required: true
     },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', // Reference to the User model
-        required: false
+        required: true
     },
     parent_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -34,9 +33,6 @@ const ItemSchema = new mongoose.Schema({
         required: true 
     },
 });
-
-// Apply Auto-Increment Plugin
-ItemSchema.plugin(AutoIncrement(mongoose), { inc_field: 'id' });
 
 const Item = mongoose.model('Item', ItemSchema);
 
