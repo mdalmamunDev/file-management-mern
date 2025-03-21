@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import proRouter from './routes/programmer.route.js';
 import authRoutes from './routes/auth.route.js';
 import cors from 'cors';
+import { authMiddleware } from './middleware/auth.middleware.js';
 
 const app = express()
 
@@ -30,7 +31,7 @@ app.get('/', (req, res) => {
   res.send('Hello file manager')
 });
 app.use("/programmer", proRouter);
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authMiddleware, authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

@@ -2,6 +2,11 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from "../models/user.model.js";
+import Redis from 'ioredis';
+
+
+
+const redis = new Redis(); // Connect to Redis
 
 
 export const register = async (req, res) => {
@@ -27,7 +32,7 @@ export const register = async (req, res) => {
 }
 
 export const login = async (req, res) => {
-//   res.json({ 'token': 121 });
+  //   res.json({ 'token': 121 });
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
@@ -45,6 +50,18 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    // Decode token to get expiration time
+    const decoded = jwt.verify(token, 'your_jwt_secret');
+    const expiryTime = decoded.exp - Math.floor(Date.now() / 1000);
+
+    // Store token in Redis with expiration
+    await redis.set(token, 'blacklisted', 'EX', expiryTime);
+
     res.json({ message: "Logged out successfully" });
   } catch (error) {
     res.status(500).json({ message: "Logout failed" });
@@ -53,12 +70,30 @@ export const logout = async (req, res) => {
 
 
 export const profile = async (req, res) => {
-    const token = req.header('Authorization').replace('Bearer ', '');
-    try {
-      const decoded = jwt.verify(token, 'your_jwt_secret');
-      const user = await User.findById(decoded.id);
-      res.json({ email: user.email });
-    } catch (error) {
-      res.status(401).json({ message: 'Unauthorized' });
-    }
+  const token = req.header('Authorization').replace('Bearer ', '');
+  try {
+    const decoded = jwt.verify(token, 'your_jwt_secret');
+    const user = await User.findById(decoded.id);
+    res.json({ email: user.email });
+  } catch (error) {
+    res.status(401).json({ message: 'Unauthorized' });
   }
+}
+
+export const dropAccount = async (req, res) => {
+  try {
+    console.log(req);
+    const userId = req.user.id; // Retrieved from the authenticated token
+
+    // Find and delete the user by their ID
+    // const user = await User.findByIdAndDelete(userId);
+
+    // if (!user) {
+    //   return res.status(404).json({ message: 'User not found' });
+    // }
+
+    // res.status(200).json({ message: 'Account successfully deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete account', error: error.message });
+  }
+};
