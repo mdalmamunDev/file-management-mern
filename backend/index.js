@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import proRouter from './routes/programmer.route.js';
 import authRoutes from './routes/auth.route.js';
+import itemRoutes from './routes/item.route.js';
 import cors from 'cors';
 import { authMiddleware } from './middleware/auth.middleware.js';
 
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
 });
 app.use("/programmer", proRouter);
 app.use("/api/auth", authMiddleware, authRoutes);
+app.use("/api/items", authMiddleware, itemRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
