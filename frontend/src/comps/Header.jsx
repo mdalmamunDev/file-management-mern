@@ -1,8 +1,9 @@
 
 import { House, Person, Lock } from "react-bootstrap-icons";
 import icon from "./../assets/img/app-icon.png";
+import { Link } from "react-router-dom";
 
-const Header = ({ setRoot }) => {
+const Header = () => {
   return (
     <nav className="navbar navbar-dark bg-dark p-3">
       <div className="container-fluid">
@@ -11,9 +12,9 @@ const Header = ({ setRoot }) => {
           <span className="text-white">File Manager</span>
         </a>
         <div className="d-flex">
-          <a href="#" className="text-white me-3"><House size={30} title="Home" /></a>
-          <a href="#" className="text-white me-3"><Lock size={30} title="Privacy Folder" /></a>
-          <a href="#" className="text-white me-3"><Person size={30} title="My Account" /></a>
+          <Link to="/my_files" href="#" className="text-white me-3"><House size={30} title="Home" /></Link>
+          <Link to='/file_list' href="#" className="text-white me-3"><Lock size={30} title="Privacy Folder" /></Link>
+          <Link to="/profile" className="text-white me-3"><Person size={30} title="My Account" /></Link>
         </div>
       </div>
     </nav>

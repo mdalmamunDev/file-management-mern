@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Header from "../comps/Header";
 import BreadcrumbNavigation from "../comps/BreadcrumbNavigation";
 import ActionButton from "../comps/ActionButton";
+import { ArrowLeftCircle, Trash } from "react-bootstrap-icons";
 
 export default function ProfilePage() {
   const [user, setUser] = useState({
@@ -32,6 +33,16 @@ export default function ProfilePage() {
     alert("Profile updated successfully!");
   };
 
+  const handleLogout = () => {
+    alert("Logged out successfully!");
+  };
+
+  const handleDeleteAccount = () => {
+    if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+      alert("Account deleted successfully!");
+    }
+  };
+
   return (
     <div>
       {/* Header */}
@@ -45,78 +56,86 @@ export default function ProfilePage() {
         <div className="card p-4 shadow-sm">
           <h3 className="mb-3 text-center">Profile Information</h3>
 
-          {/* Avatar Section */}
-          <div className="text-center">
-            <label htmlFor="avatarUpload">
-              <img
-                src={avatar || "https://cdn-icons-png.flaticon.com/512/6858/6858504.png"} // Default avatar
-                alt="Avatar"
-                className="rounded-circle"
-                style={{ width: "120px", height: "120px", cursor: "pointer" }}
+          <div className="row">
+            {/* Left Section */}
+            <div className="col-md-4 border-end p-3 text-center">
+              <label htmlFor="avatarUpload">
+                <img
+                  src={avatar || "https://cdn-icons-png.flaticon.com/512/6858/6858504.png"} // Default avatar
+                  alt="Avatar"
+                  className="rounded-circle"
+                  style={{ width: "120px", height: "120px", cursor: "pointer" }}
+                />
+              </label>
+              <input
+                type="file"
+                id="avatarUpload"
+                className="d-none"
+                accept="image/*"
+                onChange={handleAvatarChange}
               />
-            </label>
-            <input
-              type="file"
-              id="avatarUpload"
-              className="d-none"
-              accept="image/*"
-              onChange={handleAvatarChange}
-            />
-          </div>
+              <h5 className="mt-3">{user.username}</h5>
+              <p>{user.email}</p>
+              <div className="d-flex flex-column mt-4">
+                <button className="btn btn-outline-secondary bg-secondary mb-2" onClick={handleLogout}>
+                  <ArrowLeftCircle size={20}/> Logout
+                </button>
+                <button className="btn btn-danger bg-danger" onClick={handleDeleteAccount}>
+                  <Trash size={20} /> Delete Account
+                </button>
+              </div>
+            </div>
 
-          <div className="mt-3">
-            <label className="form-label">Username</label>
-            <input
-              type="text"
-              className="form-control"
-              name="username"
-              value={user.username}
-              onChange={handleChange}
-              disabled
-            />
-          </div>
+            {/* Right Section */}
+            <div className="col-md-8 p-3">
+              <div className="mt-3">
+                <label className="form-label">Username</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="username"
+                  value={user.username}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mt-3">
+                <label className="form-label">Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  name="email"
+                  value={user.email}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mt-3">
+                <label className="form-label">New Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  name="password"
+                  value={user.password}
+                  onChange={handleChange}
+                />
+              </div>
 
-          <div className="mt-3">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              className="form-control"
-              name="email"
-              value={user.email}
-              onChange={handleChange}
-              disabled
-            />
-          </div>
+              <div className="mt-3">
+                <label className="form-label">Confirm Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  name="confirmPassword"
+                  value={user.confirmPassword}
+                  onChange={handleChange}
+                />
+              </div>
 
-          <div className="mt-3">
-            <label className="form-label">New Password</label>
-            <input
-              type="password"
-              className="form-control"
-              name="password"
-              value={user.password}
-              onChange={handleChange}
-            />
+              <button className="btn btn-primary w-100 mt-4" onClick={handleUpdate}>
+                Update Profile
+              </button>
+            </div>
           </div>
-
-          <div className="mt-3">
-            <label className="form-label">Confirm Password</label>
-            <input
-              type="password"
-              className="form-control"
-              name="confirmPassword"
-              value={user.confirmPassword}
-              onChange={handleChange}
-            />
-          </div>
-
-          <button className="btn btn-primary w-100 mt-4" onClick={handleUpdate}>
-            Update Profile
-          </button>
         </div>
-
-        {/* Action Button */}
-        <ActionButton />
       </div>
     </div>
   );

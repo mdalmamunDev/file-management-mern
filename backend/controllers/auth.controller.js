@@ -43,6 +43,15 @@ export const login = async (req, res) => {
   res.json({ token });
 }
 
+export const logout = async (req, res) => {
+  try {
+    res.json({ message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Logout failed" });
+  }
+};
+
+
 export const profile = async (req, res) => {
     const token = req.header('Authorization').replace('Bearer ', '');
     try {
