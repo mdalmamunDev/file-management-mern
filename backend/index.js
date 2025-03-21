@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route.js';
 import itemRoutes from './routes/item.route.js';
+import frontendRoutes from './routes/frontend.route.js';
 import cors from 'cors';
 import { authMiddleware } from './middleware/auth.middleware.js';
 import path from 'path';
@@ -37,6 +38,7 @@ app.get('/', (req, res) => {
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/items", authMiddleware, itemRoutes);
+app.use("/api/frontend", authMiddleware, frontendRoutes );
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

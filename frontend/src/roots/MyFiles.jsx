@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Folder, Image, Film, MusicNote, FileText, HeartFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import Header from "../comps/Header";
 import BreadcrumbNavigation from "../comps/BreadcrumbNavigation";
 import ItemList from "../comps/ItemList";
 import ActionButton from "../comps/ActionButton";
+import axios from "axios";
+import { useGlobal } from "../context/GlobalProvider";
 
 const fileTypes = [
   { name: "Folder", icon: <Folder size={40} className="text-warning" />, count: 5, size: "5.03GB" },
@@ -16,20 +18,45 @@ const fileTypes = [
 ];
 
 export default () => {
+
+  const { urlGenerate } = useGlobal();
+
+  const getData = async () => {
+    try {
+      const token = localStorage.getItem('token'); // Retrieve token
+      const response = await axios.get(urlGenerate('api/frontend/my_files'), {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}` // Attach token for authentication
+        }
+      });
+
+      console.log("Fetch successful:", response.data);
+    } catch (error) {
+      console.error("Fetch failed:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    getData();
+  });
+
+
   return (
     <div>
       {/* Header */}
       <Header />
-      
+
       <div className="container-fluid p-4">
         {/* Breadcrumb Navigation */}
         <BreadcrumbNavigation />
-        
+
         {/* Storage Info */}
         <div className="alert alert-info d-flex justify-content-between align-items-center">
           <strong>Storage Used:</strong> <span>25 GB / 100 GB</span>
         </div>
-        
+
         {/* File Type Summary */}
         <div className="row mb-3">
           {fileTypes.map((file, index) => (
@@ -41,7 +68,7 @@ export default () => {
                 </div>
                 <div className="card-body px-0">
                   <small className="mb-0">Total Items: {file.count}</small>
-                  <br/>
+                  <br />
                   <small className="mb-0">Total Size: {file.size}</small>
                 </div>
               </div>
@@ -52,7 +79,7 @@ export default () => {
         {/* Recent Items */}
         <h5 className="mt-4">Recent Items</h5>
         <ItemList />
-        
+
         {/* Action Button */}
         <ActionButton />
       </div>
