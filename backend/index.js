@@ -6,12 +6,17 @@ import authRoutes from './routes/auth.route.js';
 import itemRoutes from './routes/item.route.js';
 import cors from 'cors';
 import { authMiddleware } from './middleware/auth.middleware.js';
+import path from 'path';
+import { fileURLToPath } from "url";
 
 const app = express()
 
 dotenv.config();
 app.use(cors());
 app.use(express.json());
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const PORT = process.env.PORT || 4000;
 const URI = process.env.MongoDBURI;
@@ -33,7 +38,7 @@ app.get('/', (req, res) => {
 });
 app.use("/programmer", proRouter);
 app.use("/api/auth", authMiddleware, authRoutes);
-app.use("/api/items", authMiddleware, itemRoutes);
+app.use("/api/items", itemRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Header from "../comps/Header";
 import BreadcrumbNavigation from "../comps/BreadcrumbNavigation";
-import ActionButton from "../comps/ActionButton";
 import { ArrowLeftCircle, Trash } from "react-bootstrap-icons";
 import axios from "axios";
 
@@ -11,7 +10,7 @@ export default function ProfilePage() {
     email: "johndoe@example.com",
     password: "",
     confirmPassword: "",
-  });
+});
 
   const [avatar, setAvatar] = useState(null);
 
