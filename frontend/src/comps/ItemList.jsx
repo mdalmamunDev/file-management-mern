@@ -39,17 +39,20 @@ export default ({ query }) => {
         }
     }, [query]);
 
+    const deleteItem = async (_id) => {
+        // console.log(_id);
+        const response = await api.delete(`items/${_id}`);
+    }
+
     return (
         <>
             <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-1">
                 {items && items.map((item, index) => (
-                    <Link
-                        to={item.type === 'folder' ? `/file_list?parent_id=${item._id}&parent_name=${item.name}` : urlGenerate(item.path)}
-                        key={index}
-                        className="col text-decoration-none"
-                    >
+                    <div key={index} className="col">
                         <div className="card p-3 shadow-sm d-flex flex-row align-items-center justify-content-between">
-                            <div className="d-flex align-items-center">
+                            <Link
+                                to={item.type === 'folder' ? `/file_list?parent_id=${item._id}&parent_name=${item.name}` : urlGenerate(item.path)}
+                                className="d-flex align-items-center  text-decoration-none text-black">
                                 <ItemIcon type={item.type} />
                                 <div className="ms-2">
                                     <h6 className="mb-0">{item.name}</h6>
@@ -58,7 +61,7 @@ export default ({ query }) => {
                                         {timeAgo(item.createdAt)}
                                     </small>
                                 </div>
-                            </div>
+                            </Link>
                             <details className="dropdown">
                                 <summary className="btn p-1 border-0 bg-transparent text-black">
                                     <ThreeDotsVertical size={20} />
@@ -67,11 +70,11 @@ export default ({ query }) => {
                                     <button className="dropdown-item">Favorite</button>
                                     <button className="dropdown-item">Rename</button>
                                     <button className="dropdown-item">Copy</button>
-                                    <button className="dropdown-item text-danger">Delete</button>
+                                    <button onClick={() => {deleteItem(item._id)}} className="dropdown-item text-danger">Delete</button>
                                 </div>
                             </details>
                         </div>
-                    </Link>
+                    </div>
                 ))}
             </div>
 

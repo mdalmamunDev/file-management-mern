@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Folder, Image, Film, MusicNote, FileText, HeartFill } from "react-bootstrap-icons";
+import { Folder, Image, Film, MusicNote, FileText, HeartFill, Folder2Open, FolderSymlink } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import Header from "../comps/Header";
 import BreadcrumbNavigation from "../comps/BreadcrumbNavigation";
@@ -67,10 +67,21 @@ export default () => {
           ))}
         </div>
 
+
+        {/* Browse All Section */}
+        <Link to="/file_list?group=all" className="col-md-2 col-sm-4 col-6 mb-2 text-decoration-none">
+          <div className="card p-3 shadow-sm">
+            <div className="d-flex align-items-center justify-content-center">
+              <FolderSymlink size={30} className="me-2" /> {/* Folder Icon */}
+              <h3 className="mb-0 ms-1">Browse All</h3>
+            </div>
+          </div>
+        </Link>
+
         {/* Recent Items */}
         <h5 className="mt-4">Recent Items</h5>
-        <ItemList query="?group=recent"/>
+        <ItemList query="?group=recent" />
       </div>
-    </div>
+    </div >
   );
 };

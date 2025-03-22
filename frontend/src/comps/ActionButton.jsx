@@ -28,7 +28,7 @@ export default ({ parentId, items, setItems }) => {
         // formData.append("user_id", null); // Replace with actual user ID
         formData.append("type", file.type);
         formData.append("size", file.size);
-        formData.append("parent_id", parentId);
+        formData.append("parent_id", parentId || '');
 
         try {
             const token = localStorage.getItem('token'); // Retrieve token
@@ -59,8 +59,8 @@ export default ({ parentId, items, setItems }) => {
             const token = localStorage.getItem('token'); // Retrieve token
             await axios.post(urlGenerate('api/items/folders'), 
             {
-                name: folderName,
-                parent_id: parentId,
+                name: folderName || '',
+                parent_id: parentId || '',
             }
             , {
                 headers: {

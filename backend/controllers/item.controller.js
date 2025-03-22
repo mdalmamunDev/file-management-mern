@@ -1,6 +1,7 @@
 import Item from '../models/item.model.js';
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 
 
 // Configure Multer for file uploads
@@ -106,8 +107,17 @@ export const getItems = async (req, res) => {
         // Limit for 'recent' group
         const limit = group === 'recent' ? 10 : null;
 
-        // Fetch items based on the filter and sort
-        const items = await Item.find(filter).sort(sort).limit(limit);
+        let items;
+
+        // If group is "all", fetch folders first, then files, all sorted by name
+        if (group === 'all') {
+            const folders = await Item.find({ ...filter, type: 'folder' }).sort(sort);
+            const files = await Item.find({ ...filter, type: { $ne: 'folder' } }).sort(sort);
+            items = [...folders, ...files];
+        } else {
+            // Fetch items based on the filter and sort for other groups
+            items = await Item.find(filter).sort(sort).limit(limit);
+        }
 
         res.json(items);
     } catch (error) {
@@ -142,7 +152,21 @@ export const deleteItem = async (req, res) => {
     try {
         const deletedItem = await Item.findByIdAndDelete(req.params.id);
         if (!deletedItem) return res.status(404).json({ error: 'Item not found' });
-        res.json({ message: 'Item deleted successfully' });
+
+        // If the item has a stored file, delete it from the "uploads" folder
+        if (deletedItem.path) {
+            const filePath = path.join(process.cwd(), deletedItem.path); // Absolute path
+            fs.unlink(filePath, (err) => {
+                if (err && err.code !== 'ENOENT') {
+                    console.error("Error deleting file:", err);
+                }
+            });
+        }
+
+        // Delete all child items (sub-items) of the deleted folder
+        await Item.deleteMany({ parent_id: deletedItem._id });
+
+        res.json({ message: 'Item and its associated files deleted successfully' });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
