@@ -9,6 +9,7 @@ import FileList from "./roots/FileList";
 import CalendarFileList from "./roots/CalendarFileList";
 import Profile from "./roots/Profile";
 import { GlobalProvider } from "./context/GlobalProvider";
+import PrivateFolder from "./roots/PrivateFolder";
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/file_list" element={<FileList />} />
           <Route path="/file_calander" element={<CalendarFileList />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/private" element={<PrivateFolder />} />
         </Routes>
       </Router>
     </GlobalProvider>

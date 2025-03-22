@@ -25,6 +25,10 @@ const ItemSchema = new mongoose.Schema(
             type: Boolean,
             default: false
         },
+        is_privet: {
+            type: Boolean,
+            default: false
+        },
         size: {
             type: Number,
             default: 0

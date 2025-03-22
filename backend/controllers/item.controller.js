@@ -101,6 +101,10 @@ export const getItems = async (req, res) => {
             filter.is_favorite = true; // Directly map group to type
         }
 
+        if (group === 'private') {
+            filter.is_private = true;
+        }
+
         // Sorting options
         const sort = { createdAt: -1 };
 

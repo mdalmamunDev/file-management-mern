@@ -40,8 +40,27 @@ export default ({ query }) => {
     }, [query]);
 
     const deleteItem = async (_id) => {
-        // console.log(_id);
         const response = await api.delete(`items/${_id}`);
+    }
+
+    const doFavorite = async (item) => {
+        if (!item) return;
+
+        try {
+            const response = await api.put(`items/${item._id}`, { is_favorite: !item.is_favorite }, {
+                headers: {
+                    "Content-Type": "application/json", // Set content type to JSON if sending JSON data
+                },
+            });
+
+            // Log response data for debugging
+            console.log("Response:", response.data);
+
+            // You can perform additional actions here if needed
+        } catch (error) {
+            // Handle any error during the request
+            console.error("Error updating favorite:", error);
+        }
     }
 
     return (
@@ -67,10 +86,12 @@ export default ({ query }) => {
                                     <ThreeDotsVertical size={20} />
                                 </summary>
                                 <div className="dropdown-menu show position-absolute end-0 mt-1 p-2 shadow-sm rounded">
-                                    <button className="dropdown-item">Favorite</button>
+                                    <button onClick={() => { doFavorite(item) }} className="dropdown-item">
+                                        {item.is_favorite ? 'Unfavorite' : 'Favorite'}
+                                    </button>
                                     <button className="dropdown-item">Rename</button>
                                     <button className="dropdown-item">Copy</button>
-                                    <button onClick={() => {deleteItem(item._id)}} className="dropdown-item text-danger">Delete</button>
+                                    <button onClick={() => { deleteItem(item._id) }} className="dropdown-item text-danger">Delete</button>
                                 </div>
                             </details>
                         </div>
