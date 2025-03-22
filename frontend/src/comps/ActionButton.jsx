@@ -4,7 +4,7 @@ import axios from "axios";
 import { useGlobal } from "../context/GlobalProvider";
 import { useState } from "react";
 
-export default function FloatingActionButton() {
+export default ({ parentId, items, setItems }) => {
     const { urlGenerate } = useGlobal();
 
     const [showCF, setShowCF] = useState(false);
@@ -28,6 +28,7 @@ export default function FloatingActionButton() {
         // formData.append("user_id", null); // Replace with actual user ID
         formData.append("type", file.type);
         formData.append("size", file.size);
+        formData.append("parent_id", parentId);
 
         try {
             const token = localStorage.getItem('token'); // Retrieve token
@@ -39,7 +40,12 @@ export default function FloatingActionButton() {
             });
 
             console.log("Upload successful:", response.data);
-            alert("File uploaded successfully!");
+            if(response.data) {
+                const {item, message} = response.data;
+                items.push(item);
+                setItems(items);
+                alert(message);
+            }
         } catch (error) {
             console.error("Upload failed:", error);
             alert("Failed to upload file.");
@@ -49,16 +55,12 @@ export default function FloatingActionButton() {
     // Function to handle file selection and upload
     const createFolder = async (e) => {
         e.preventDefault();
-
-        const formData = new FormData();
-        formData.append("name", folderName);
-        formData.append("type", folderName);
-
         try {
             const token = localStorage.getItem('token'); // Retrieve token
-            const response = await axios.post(urlGenerate('api/items/folders'), 
+            await axios.post(urlGenerate('api/items/folders'), 
             {
                 name: folderName,
+                parent_id: parentId,
             }
             , {
                 headers: {

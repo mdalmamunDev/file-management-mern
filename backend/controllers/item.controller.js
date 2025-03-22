@@ -16,6 +16,19 @@ const storage = multer.diskStorage({
 const upload = multer({ storage }).single("file");
 
 
+const getFileCategory = (mimeType) => {
+    if (mimeType.startsWith('image/')) {
+        return 'image';
+    } else if (mimeType.startsWith('video/')) {
+        return 'video';
+    } else if (mimeType.startsWith('audio/')) {
+        return 'audio';
+    } else if (mimeType === 'application/x-directory' || mimeType === 'folder') {
+        return 'folder';
+    } else {
+        return 'unknown';
+    }
+};
 // Create an Item
 export const createItem = async (req, res) => {
     try {
@@ -31,10 +44,10 @@ export const createItem = async (req, res) => {
                 name,
                 user_id: req.user ? req.user.id : null,
                 parent_id: parent_id || null,
-                path: req.file ? `/uploads/${req.file.filename}` : null,
+                path: req.file ? `uploads/${req.file.filename}` : null,
                 is_favorite: is_favorite || false,
                 size: req.file ? req.file.size : size || 0,
-                type: req.file ? req.file.mimetype : type || "unknown"
+                type: getFileCategory(req.file ? req.file.mimetype : ''),
             });
 
             await newItem.save();
@@ -71,15 +84,31 @@ export const createFolder = async (req, res) => {
 // Get all Items (with optional filters)
 export const getItems = async (req, res) => {
     try {
+        const { user_id, parent_id, group } = req.query;
+
+        // Build filter object
         const filter = {};
-        if (req.query.user_id) {
-            filter.user_id = req.query.user_id;
-        }
-        if (req.query.parent_id) {
-            filter.parent_id = req.query.parent_id;
+        if (user_id) filter.user_id = user_id;
+        if (parent_id) filter.parent_id = parent_id;
+
+        // Dynamically apply type filter if needed
+        if (group && ['image', 'video', 'audio', 'document', 'folder'].includes(group)) {
+            filter.type = group; // Directly map group to type
         }
 
-        const items = await Item.find(filter).populate('user_id', 'name email').populate('parent_id', 'name');
+        if (group === 'favorite') {
+            filter.is_favorite = true; // Directly map group to type
+        }
+
+        // Sorting options
+        const sort = { createdAt: -1 };
+
+        // Limit for 'recent' group
+        const limit = group === 'recent' ? 10 : null;
+
+        // Fetch items based on the filter and sort
+        const items = await Item.find(filter).sort(sort).limit(limit);
+
         res.json(items);
     } catch (error) {
         res.status(400).json({ error: error.message });

@@ -1,37 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Folder, Image, Film, MusicNote, FileText, HeartFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import Header from "../comps/Header";
 import BreadcrumbNavigation from "../comps/BreadcrumbNavigation";
 import ItemList from "../comps/ItemList";
-import ActionButton from "../comps/ActionButton";
 import axios from "axios";
 import { useGlobal } from "../context/GlobalProvider";
-
-const fileTypes = [
-  { name: "Folder", icon: <Folder size={40} className="text-warning" />, count: 5, size: "5.03GB" },
-  { name: "Image", icon: <Image size={40} className="text-success" />, count: 6351, size: "5.03GB" },
-  { name: "Videos", icon: <Film size={40} className="text-danger" />, count: 6351, size: "5.03GB" },
-  { name: "Audios", icon: <MusicNote size={40} className="text-primary" />, count: 6351, size: "5.03GB" },
-  { name: "Documents", icon: <FileText size={40} className="text-secondary" />, count: 6351, size: "5.03GB" },
-  { name: "Favorites", icon: <HeartFill size={40} className="text-danger" />, count: 6351, size: "5.03GB" },
-];
+import api from "../api/api";
+import ItemIcon from "../comps/ItemIcon";
 
 export default () => {
 
-  const { urlGenerate } = useGlobal();
+  const [fileTypes, setFileTypes] = useState([])
+  const [recentFiles, setRecentFiles] = useState([])
 
   const getData = async () => {
     try {
-      const token = localStorage.getItem('token'); // Retrieve token
-      const response = await axios.get(urlGenerate('api/frontend/my_files'), {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}` // Attach token for authentication
-        }
-      });
-
-      console.log("Fetch successful:", response.data);
+      const response = await api.get("frontend/my_files"); // No need to set headers manually
+      if (response.data && response.data.data) {
+        const { types, recent } = response.data.data;
+        setFileTypes(types);
+        setRecentFiles(recent);
+      }
     } catch (error) {
       console.error("Fetch failed:", error);
     }
@@ -40,7 +30,7 @@ export default () => {
 
   useEffect(() => {
     getData();
-  });
+  }, []);
 
 
   return (
@@ -60,10 +50,11 @@ export default () => {
         {/* File Type Summary */}
         <div className="row mb-3">
           {fileTypes.map((file, index) => (
-            <Link to='/file_list' key={index} className="col-md-2 col-sm-4 col-6 mb-2 text-decoration-none">
+            <Link to={`/file_list?group=${file.type}`} key={index} className="col-md-2 col-sm-4 col-6 mb-2 text-decoration-none">
               <div className="card p-3 shadow-sm">
                 <div className="d-flex align-items-center">
-                  {file.icon}
+                  {/* Conditionally render icons based on the file name */}
+                  <ItemIcon type={file.type} />
                   <h3 className="mb-0 ms-1">{file.name}</h3>
                 </div>
                 <div className="card-body px-0">
@@ -78,10 +69,7 @@ export default () => {
 
         {/* Recent Items */}
         <h5 className="mt-4">Recent Items</h5>
-        <ItemList />
-
-        {/* Action Button */}
-        <ActionButton />
+        <ItemList query="?group=recent"/>
       </div>
     </div>
   );

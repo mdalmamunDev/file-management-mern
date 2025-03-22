@@ -1,5 +1,5 @@
-import axios from "axios";
 import React, { createContext, useContext } from "react";
+import moment from 'moment'
 
 // Create context
 const GlobalContext = createContext();
@@ -17,8 +17,12 @@ export const GlobalProvider = ({ children }) => {
         return `${BASE_URL_B}${url ? `/${url}` : ""}${urlSuffix ? `/${urlSuffix}` : ""}`;
     };
 
+    const timeAgo = (timestamp) => {
+        return moment(timestamp).fromNow(true); // Returns without "ago"
+      };
+
     return (
-        <GlobalContext.Provider value={{ APP_NAME, urlGenerate, formatDate }}>
+        <GlobalContext.Provider value={{ APP_NAME, urlGenerate, formatDate, timeAgo }}>
             {children}
         </GlobalContext.Provider>
     );

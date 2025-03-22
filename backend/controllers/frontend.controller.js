@@ -24,12 +24,12 @@ export const getMyFiles = async (req, res) => {
 
         // Define types and their respective filters
         const types = [
-            { name: "Folder", filter: { type: "folder", user_id: userId } },
-            { name: "Image", filter: { type: { $regex: /^image\// }, user_id: userId } },
-            { name: "Videos", filter: { type: { $regex: /^video\// }, user_id: userId } },
-            { name: "Audios", filter: { type: { $regex: /^audio\// }, user_id: userId } },
-            { name: "Documents", filter: { type: { $in: ["application/pdf", "application/msword"] }, user_id: userId } },
-            { name: "Favorites", filter: { is_favorite: true, user_id: userId } }
+            { name: "Folder", type: "folder", filter: { type: "folder", user_id: userId } },
+            { name: "Image", type: "image", filter: { type: "image", user_id: userId } },
+            { name: "Videos", type: "video", filter: { type: "video", user_id: userId } },
+            { name: "Audios", type: "audio", filter: { type: "audio", user_id: userId } },
+            { name: "Documents", type: "document", filter: { type: 'document', user_id: userId } },
+            { name: "Favorites", type: "favorite", filter: { is_favorite: true, user_id: userId } }
         ];
 
         // Fetch counts and total size for each category
@@ -44,16 +44,10 @@ export const getMyFiles = async (req, res) => {
             return {
                 name: category.name,
                 count,
-                size: totalSize.length > 0 ? formatSize(totalSize[0].size) : "0 Bytes"
+                size: totalSize.length > 0 ? formatSize(totalSize[0].size) : "0 Bytes",
+                type: category.type,
             };
         }));
-
-        data.recent = await Item.find({ user_id: userId })
-        .sort({ _id: -1 }) // Sort by most recent
-        .limit(10) // Get only 10 items
-        .select("name type path size createdAt"); // Return only relevant fields
-
-
         res.status(200).json({ message: "Data retrieved successfully", data });
     } catch (error) {
         res.status(500).json({ error: error.message });
