@@ -71,7 +71,7 @@ export default () => {
 
         {/* Browse All Section */}
         <Link
-          to="/file_list?group=all"
+          to="/file_list?group=all&parent_name=Brows All"
           className="col-md-2 col-sm-4 col-6 mb-2 text-decoration-none"
         >
           <div className="card p-3 shadow-sm">
