@@ -74,11 +74,54 @@ export const profile = async (req, res) => {
   try {
     const decoded = jwt.verify(token, 'your_jwt_secret');
     const user = await User.findById(decoded.id);
-    res.json({ email: user.email });
+    res.json(user);
   } catch (error) {
     res.status(401).json({ message: 'Unauthorized' });
   }
 }
+
+// Controller: Update user profile and change password
+export const updateUserProfile = async (req, res) => {
+  try {
+    const { userName, email, password, newPassword, confirmNewPassword } = req.body;
+
+    const userId = req.user?.id; // Get user ID from the authenticated token
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update user details (username, email)
+    user.user_name = userName || user.user_name;
+    user.email = email || user.email;
+
+    // Check if the password change is requested
+    if (password && newPassword && newPassword === confirmNewPassword) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Current password is incorrect' });
+      }
+
+      // Hash new password and update the user record
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+    } else if (password || newPassword || confirmNewPassword) {
+      return res.status(400).json({ message: 'Passwords do not match or missing fields' });
+    }
+
+    // Save updated user data
+    await user.save();
+
+    res.json({ message: 'Profile updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating profile', error: error.message });
+  }
+};
+
 
 export const dropAccount = async (req, res) => {
   try {
