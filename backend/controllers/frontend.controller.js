@@ -1,5 +1,5 @@
 import Item from "../models/item.model.js";
-
+import { ObjectId } from "mongoose"; // Import ObjectId if not already imported
 
 const formatSize = (bytes) => {
     if (bytes >= 1073741824) { // GB
@@ -48,6 +48,12 @@ export const getMyFiles = async (req, res) => {
                 type: category.type,
             };
         }));
+
+        // used storage
+        
+
+        data.used_storage = '9.6 MB';
+        
         res.status(200).json({ message: "Data retrieved successfully", data });
     } catch (error) {
         res.status(500).json({ error: error.message });

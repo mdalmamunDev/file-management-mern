@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Header from "../comps/Header";
 import BreadcrumbNavigation from "../comps/BreadcrumbNavigation";
 import ItemList from "../comps/ItemList";
-import ActionButton from "../comps/ActionButton";
 import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 
 
@@ -82,9 +81,6 @@ export default () => {
                 </div>
                 {/* Recent Items */}
                 <ItemList />
-
-                {/* Action Button */}
-                <ActionButton />
             </div>
         </div>
     );

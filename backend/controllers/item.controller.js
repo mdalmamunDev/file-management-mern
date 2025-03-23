@@ -58,6 +58,29 @@ export const createItem = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+export const copyItem = async (req, res) => {
+    try {
+        const { _id, parent_id } = req.body;
+
+        const item = await Item.findById(_id);
+        if (!item) return res.status(404).json({ error: "Item not found" });
+
+        // Create a copy
+        const newItem = new Item({
+            ...item.toObject(),
+            _id: undefined,
+            parent_id: parent_id,
+            createdAt: undefined,
+            updatedAt: undefined,
+        });
+        await newItem.save();
+
+        res.status(201).json({ message: "Item copied successfully", item: newItem });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 // Create an Item
 export const createFolder = async (req, res) => {
     try {
@@ -98,10 +121,13 @@ export const getItems = async (req, res) => {
         if (group === 'private') filter.is_private = true;
 
         const sort = { createdAt: -1 };
-        const limit = group === 'recent' ? 10 : null;
-
-        let items;
+        let limit, items;
+        if (group === 'recent') {
+            limit = 10;
+            filter.type = { $ne: 'folder' };
+        }
         if (group === 'all') {
+            filter.parent_id = null;
             const folders = await Item.find({ ...filter, type: 'folder' }).sort(sort);
             const files = await Item.find({ ...filter, type: { $ne: 'folder' } }).sort(sort);
             items = [...folders, ...files];
@@ -119,7 +145,10 @@ export const getItems = async (req, res) => {
             })
         );
 
-        res.json(itemsWithCount);
+        // get all folders for copy & move
+        const folders = await Item.find({type: 'folder'});
+
+        res.json({items: itemsWithCount, folders: folders});
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

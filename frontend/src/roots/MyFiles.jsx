@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Folder, Image, Film, MusicNote, FileText, HeartFill, Folder2Open, FolderSymlink } from "react-bootstrap-icons";
+import { FolderSymlink } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import Header from "../comps/Header";
 import BreadcrumbNavigation from "../comps/BreadcrumbNavigation";
 import ItemList from "../comps/ItemList";
-import axios from "axios";
-import { useGlobal } from "../context/GlobalProvider";
 import api from "../api/api";
 import ItemIcon from "../comps/ItemIcon";
 
@@ -44,13 +42,13 @@ export default () => {
 
         {/* Storage Info */}
         <div className="alert alert-info d-flex justify-content-between align-items-center">
-          <strong>Storage Used:</strong> <span>25 GB / 100 GB</span>
+          <strong>Storage Used:</strong> <span>3.5 MB / 5 GB</span>
         </div>
 
         {/* File Type Summary */}
         <div className="row mb-3">
           {fileTypes.map((file, index) => (
-            <Link to={`/file_list?group=${file.type}`} key={index} className="col-md-2 col-sm-4 col-6 mb-2 text-decoration-none">
+            <Link to={`/file_list?group=${file.type}&parent_name=${file.name}`} key={index} className="col-md-2 col-sm-4 col-6 mb-2 text-decoration-none">
               <div className="card p-3 shadow-sm">
                 <div className="d-flex align-items-center">
                   {/* Conditionally render icons based on the file name */}

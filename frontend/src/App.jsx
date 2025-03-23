@@ -26,7 +26,7 @@ function App() {
           <Route path="/password_forgot" element={<PasswordForgot />} />
           <Route path="/my_files" element={<MyFiles />} />
           <Route path="/file_list" element={<FileList />} />
-          <Route path="/file_calander" element={<CalendarFileList />} />
+          <Route path="/file_calendar" element={<CalendarFileList />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/private" element={<PrivateFolder />} />
         </Routes>
