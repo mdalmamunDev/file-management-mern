@@ -1,6 +1,25 @@
 # File Manager
 
 A MERN stack project for managing files. This project uses **Node.js**, **Express.js**, **MongoDB**, **React**, and **Vite** to provide a simple and efficient way to manage files.
+---
+
+## Screenshots
+
+Here are some screenshots of the application:
+
+### Desktop View
+<div>
+   <img src="./md/d1.png" alt="Home Page"/>
+   <img src="./md/d2.png" alt="Home Page"/>
+</div>
+
+### Mobile View
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; overflow: auto;">
+  <img src="./md/1.png" alt="Home Page" width="200" />
+  <img src="./md/2.png" alt="File Upload" width="200" />
+  <img src="./md/3.png" alt="File List" width="200" />
+  <img src="./md/4.png" alt="File Details" width="200" />
+</div>
 
 ---
 
