@@ -331,6 +331,11 @@ export default ({ query }) => {
                         </div>
                     </div>
                 ))}
+                {(!items || items.length === 0) && 
+                    <div className="alert alert-warning w-100 text-center">
+                        No items found
+                    </div>
+                }
             </div>
 
             {/* Floating Action Button */}

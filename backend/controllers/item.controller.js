@@ -108,8 +108,8 @@ export const createFolder = async (req, res) => {
 // Get all Items (with optional filters)
 export const getItems = async (req, res) => {
     try {
-        const { user_id, parent_id, group } = req.query;
-
+        const { parent_id, group, date } = req.query;
+        const user_id = req.user?.id;
         // Build filter object
         const filter = {};
         if (user_id) filter.user_id = user_id;
@@ -125,6 +125,17 @@ export const getItems = async (req, res) => {
         if (group === 'recent') {
             limit = 10;
             filter.type = { $ne: 'folder' };
+        }
+        if (group === 'calendar') {
+            if (!date) {
+                return res.status(400).json({ error: "Date is required in YYYY-MM-DD format" });
+            }
+    
+            const startDate = new Date(date + "T00:00:00.000Z"); // Start of the day
+            const endDate = new Date(date + "T23:59:59.999Z");   // End of the day
+            filter.createdAt = { $gte: startDate, $lte: endDate };  // Filter by date range
+            filter.type = { $ne: 'folder' };
+    
         }
         if (group === 'all') {
             filter.parent_id = null;

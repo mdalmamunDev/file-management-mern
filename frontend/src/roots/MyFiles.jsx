@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FolderSymlink } from "react-bootstrap-icons";
+import { Calendar2Date, FolderSymlink } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import Header from "../comps/Header";
 import BreadcrumbNavigation from "../comps/BreadcrumbNavigation";
@@ -10,15 +10,15 @@ import ItemIcon from "../comps/ItemIcon";
 export default () => {
 
   const [fileTypes, setFileTypes] = useState([])
-  const [recentFiles, setRecentFiles] = useState([])
+  const [usedStorage, setUsedStorage] = useState([])
 
   const getData = async () => {
     try {
       const response = await api.get("frontend/my_files"); // No need to set headers manually
       if (response.data && response.data.data) {
-        const { types, recent } = response.data.data;
+        const { types, used_storage } = response.data.data;
         setFileTypes(types);
-        setRecentFiles(recent);
+        setUsedStorage(used_storage);
       }
     } catch (error) {
       console.error("Fetch failed:", error);
@@ -42,13 +42,17 @@ export default () => {
 
         {/* Storage Info */}
         <div className="alert alert-info d-flex justify-content-between align-items-center">
-          <strong>Storage Used:</strong> <span>3.5 MB / 5 GB</span>
+          <strong>Storage Used:</strong> <span>{usedStorage} / 5 GB</span>
         </div>
 
         {/* File Type Summary */}
         <div className="row mb-3">
           {fileTypes.map((file, index) => (
-            <Link to={`/file_list?group=${file.type}&parent_name=${file.name}`} key={index} className="col-md-2 col-sm-4 col-6 mb-2 text-decoration-none">
+            <Link
+              to={`/file_list?group=${file.type}&parent_name=${file.name}`}
+              key={index}
+              className="col-md-2 col-sm-4 col-6 mb-2 text-decoration-none"
+            >
               <div className="card p-3 shadow-sm">
                 <div className="d-flex align-items-center">
                   {/* Conditionally render icons based on the file name */}
@@ -65,9 +69,11 @@ export default () => {
           ))}
         </div>
 
-
         {/* Browse All Section */}
-        <Link to="/file_list?group=all" className="col-md-2 col-sm-4 col-6 mb-2 text-decoration-none">
+        <Link
+          to="/file_list?group=all"
+          className="col-md-2 col-sm-4 col-6 mb-2 text-decoration-none"
+        >
           <div className="card p-3 shadow-sm">
             <div className="d-flex align-items-center justify-content-center">
               <FolderSymlink size={30} className="me-2" /> {/* Folder Icon */}
@@ -77,9 +83,14 @@ export default () => {
         </Link>
 
         {/* Recent Items */}
-        <h5 className="mt-4">Recent Items</h5>
+        <div className="mt-5 d-flex justify-content-between align-items-center">
+          <h5 className="mt-4">Recent Items</h5>
+          <Link to="/file_calendar" className="text-decoration-none text-secondary" title="Calendar view">
+            <Calendar2Date size={20} className="me-2" />
+          </Link>
+        </div>
         <ItemList query="?group=recent" />
       </div>
-    </div >
+    </div>
   );
 };

@@ -36,15 +36,13 @@ export const getMyFiles = async (req, res) => {
         const data = {};
         data.types = await Promise.all(types.map(async (category) => {
             const count = await Item.countDocuments(category.filter);
-            const totalSize = await Item.aggregate([
-                { $match: category.filter },
-                { $group: { _id: null, size: { $sum: "$size" } } }
-            ]);
+            const itemsSize = await Item.find(category.filter).select('size');
+            const totalSize = itemsSize.reduce((acc, item) => acc + item.size, 0);
 
             return {
                 name: category.name,
                 count,
-                size: totalSize.length > 0 ? formatSize(totalSize[0].size) : "0 Bytes",
+                size: formatSize(totalSize),
                 type: category.type,
             };
         }));
@@ -52,7 +50,10 @@ export const getMyFiles = async (req, res) => {
         // used storage
         
 
-        data.used_storage = '9.6 MB';
+
+        const allItemsSize = await Item.find({user_id: userId}).select('size');
+        const totalSize = allItemsSize.reduce((acc, item) => acc + item.size, 0);
+        data.used_storage = formatSize(totalSize);
         
         res.status(200).json({ message: "Data retrieved successfully", data });
     } catch (error) {
