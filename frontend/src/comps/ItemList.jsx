@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Clock, ThreeDotsVertical } from "react-bootstrap-icons";
+import { Clock, Dot, ThreeDotsVertical } from "react-bootstrap-icons";
 import ItemIcon from "./ItemIcon";
 import ActionButton from "../comps/ActionButton";
 import { useGlobal } from "../context/GlobalProvider";
@@ -10,6 +10,8 @@ export default ({ query }) => {
     const [items, setItems] = useState([]);
     const { timeAgo, urlGenerate } = useGlobal();
     const [parentId, setParentId] = useState(null);
+    const [showRI, setShowRI] = useState(false);
+    const [newName, setNewName] = useState();
 
     const getData = async (parentId = null) => {
         try {
@@ -29,12 +31,10 @@ export default ({ query }) => {
     };
 
     useEffect(() => {
-        if (query && query.includes("parent_id")) {
-            // If the query includes parent_id, fetch items for that parent
+        if (query && query.includes("parent_id")) {    // If the query includes parent_id, fetch items for that parent
             const parentId = new URLSearchParams(query).get("parent_id");
             getData(parentId);
-        } else {
-            // Default fetch for root-level items
+        } else {    // Default fetch for root-level items
             getData();
         }
     }, [query]);
@@ -52,14 +52,23 @@ export default ({ query }) => {
                     "Content-Type": "application/json", // Set content type to JSON if sending JSON data
                 },
             });
-
-            // Log response data for debugging
-            console.log("Response:", response.data);
-
-            // You can perform additional actions here if needed
         } catch (error) {
-            // Handle any error during the request
             console.error("Error updating favorite:", error);
+        }
+    }
+
+    const renameItem = async (e, _id) => {
+        e.preventDefault();
+        if (!_id) return;
+
+        try {
+            const response = await api.put(`items/${_id}`, { name: newName }, {
+                headers: {
+                    "Content-Type": "application/json", // Set content type to JSON if sending JSON data
+                },
+            });
+        } catch (error) {
+            console.error("Error updating name:", error);
         }
     }
 
@@ -79,6 +88,12 @@ export default ({ query }) => {
                                         <Clock size={16} className="me-1" />
                                         {timeAgo(item.createdAt)}
                                     </small>
+                                    {item.type === 'folder' &&
+                                        <small className="text-muted">
+                                            <Dot size={20} />
+                                            {item.childCount} Items
+                                        </small>
+                                    }
                                 </div>
                             </Link>
                             <details className="dropdown">
@@ -89,7 +104,25 @@ export default ({ query }) => {
                                     <button onClick={() => { doFavorite(item) }} className="dropdown-item">
                                         {item.is_favorite ? 'Unfavorite' : 'Favorite'}
                                     </button>
-                                    <button className="dropdown-item">Rename</button>
+                                    {showRI &&
+                                        <form className="d-flex" onSubmit={(e) => renameItem(e, item._id)}>
+                                            <input
+                                                className="form-control"
+                                                placeholder="Create Folder"
+                                                style={{ width: 200 }}
+                                                value={newName}
+                                                onChange={(e) => setNewName(e.target.value)}
+                                            />
+                                            <button className="btn btn-primary" type="submit" >
+                                                Ok
+                                            </button>
+                                        </form>
+                                    }
+                                    {!showRI &&
+                                        <button className="dropdown-item" onClick={() => {setShowRI(true); setNewName(item.name)}}>
+                                            Rename
+                                        </button>
+                                    }
                                     <button className="dropdown-item">Copy</button>
                                     <button onClick={() => { deleteItem(item._id) }} className="dropdown-item text-danger">Delete</button>
                                 </div>

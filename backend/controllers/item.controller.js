@@ -27,7 +27,7 @@ const getFileCategory = (mimeType) => {
     } else if (mimeType === 'application/x-directory' || mimeType === 'folder') {
         return 'folder';
     } else {
-        return 'unknown';
+        return 'document';
     }
 };
 // Create an Item
@@ -35,7 +35,7 @@ export const createItem = async (req, res) => {
     try {
         upload(req, res, async (err) => {
             if (err) {
-                return res.status(400).json({ error: "File upload failed" });
+                return res.status(400).json({ error: "File upload failed", err });
             }
 
             const { name, parent_id, is_favorite, size, type } = req.body;
@@ -93,37 +93,33 @@ export const getItems = async (req, res) => {
         if (parent_id) filter.parent_id = parent_id;
 
         // Dynamically apply type filter if needed
-        if (group && ['image', 'video', 'audio', 'document', 'folder'].includes(group)) {
-            filter.type = group; // Directly map group to type
-        }
+        if (group && ['image', 'video', 'audio', 'document', 'folder'].includes(group)) filter.type = group;
+        if (group === 'favorite') filter.is_favorite = true;
+        if (group === 'private') filter.is_private = true;
 
-        if (group === 'favorite') {
-            filter.is_favorite = true; // Directly map group to type
-        }
-
-        if (group === 'private') {
-            filter.is_private = true;
-        }
-
-        // Sorting options
         const sort = { createdAt: -1 };
-
-        // Limit for 'recent' group
         const limit = group === 'recent' ? 10 : null;
 
         let items;
-
-        // If group is "all", fetch folders first, then files, all sorted by name
         if (group === 'all') {
             const folders = await Item.find({ ...filter, type: 'folder' }).sort(sort);
             const files = await Item.find({ ...filter, type: { $ne: 'folder' } }).sort(sort);
             items = [...folders, ...files];
         } else {
-            // Fetch items based on the filter and sort for other groups
             items = await Item.find(filter).sort(sort).limit(limit);
         }
 
-        res.json(items);
+        const itemsWithCount = await Promise.all(
+            items.map(async (item) => {
+                if (item.type === "folder") {
+                    const childCount = await Item.countDocuments({ parent_id: item._id });
+                    return { ...item.toObject(), childCount };
+                }
+                return item.toObject();
+            })
+        );
+
+        res.json(itemsWithCount);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
