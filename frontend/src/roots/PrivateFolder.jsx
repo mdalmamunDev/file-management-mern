@@ -2,20 +2,34 @@ import React, { useState } from "react";
 import ItemList from "../comps/ItemList";
 import Header from "../comps/Header";
 import BreadcrumbNavigation from "../comps/BreadcrumbNavigation";
-// import 'bootstrap/dist/css/bootstrap.min.css';
+import api from "../api/api";
 
 export default () => {
     const [privacyPass, setPrivacyPass] = useState("");
     const [isAccessGranted, setIsAccessGranted] = useState(false);
-    const correctPass = "123456"; // Replace this with your actual privacy pass
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (privacyPass === correctPass) {
-            setIsAccessGranted(true);
-        } else {
-            alert("Incorrect pass. Please try again.");
-        }
+        try {
+            const response = await api.post(
+                "auth/privacy_check",
+                { password: privacyPass },
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+        
+            if (response.data.success) {
+              setIsAccessGranted(true);
+            } else {
+              alert("Incorrect password. Please try again.");
+            }
+          } catch (error) {
+            console.error("Login failed:", error);
+            alert("An error occurred. Please try again.");
+          }
     };
 
     return (<>
@@ -40,10 +54,10 @@ export default () => {
                         <div className="col-md-6">
                             <div className="card mt-5">
                                 <div className="card-body">
-                                    <h5 className="card-title">Enter Privacy Pass</h5>
+                                    <h5 className="card-title">Private Folder</h5>
                                     <form onSubmit={handleSubmit}>
                                         <div className="form-group">
-                                            <label htmlFor="privacyPass">Privacy Pass</label>
+                                            <label htmlFor="privacyPass">Password</label>
                                             <input
                                                 type="password"
                                                 className="form-control"

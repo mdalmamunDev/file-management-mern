@@ -12,8 +12,8 @@ const Header = () => {
           <span className="text-white">File Manager</span>
         </a>
         <div className="d-flex">
-          <Link to="/my_files" href="#" className="text-white me-3"><House size={30} title="Home" /></Link>
-          <Link to='/file_list' href="#" className="text-white me-3"><Lock size={30} title="Privacy Folder" /></Link>
+          <Link to="/my_files" className="text-white me-3"><House size={30} title="Home" /></Link>
+          <Link to='/private' className="text-white me-3"><Lock size={30} title="Privacy Folder" /></Link>
           <Link to="/profile" className="text-white me-3"><Person size={30} title="My Account" /></Link>
         </div>
       </div>

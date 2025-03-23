@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Header from "../comps/Header";
 import BreadcrumbNavigation from "../comps/BreadcrumbNavigation";
 import { ArrowLeftCircle, Trash } from "react-bootstrap-icons";
-import axios from "axios";
+import api from "../api/api";
 
 export default function ProfilePage() {
   const [user, setUser] = useState({
@@ -34,29 +34,26 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
-
-    try {
-      const response = await axios.delete('/api/users/drop-account', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      // Handle successful account deletion
-      alert(response.data.message || 'Account successfully deleted');
-    } catch (error) {
-      // Handle error (e.g., user not found, server issues)
-      const errorMessage = error.response?.data?.message || 'Something went wrong';
-      alert(errorMessage);
-    }
+    // delete the token from local storage
+    localStorage.removeItem('token');
+    // redirect to the login page
+    window.location.href = '/';
   };
   
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      alert("Account deleted successfully!");
+      try {
+        const response = await api.delete('auth');
+        if (response.data.success) {
+          alert("Account deleted successfully!"); 
+          handleLogout();
+        }
+    
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || 'Something went wrong';
+        alert(errorMessage);
+      }
     }
   };
 
