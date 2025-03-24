@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Clock, Dot, ThreeDotsVertical, Plus, Copy, Folder } from "react-bootstrap-icons";
 import ItemIcon from "./ItemIcon";
 import { useGlobal } from "../context/GlobalProvider";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import axios from "axios";
 
@@ -17,6 +17,7 @@ export default ({ query }) => {
     const [showMove, setShowMove] = useState(false);
     const [allFolders, setAllFolders] = useState([]);
     const [folderName, setFolderName] = useState("New Folder");
+    const navigate = useNavigate();
 
     const fileInputRef = useRef(null);
 
@@ -182,46 +183,48 @@ export default ({ query }) => {
     };
 
     const openFile = (item) => {
-        // Check if the file is an image type (like jpg, png, gif, etc.)
-        // const fileExtension = item.name.split('.').pop().toLowerCase();
-        const imageExtensions = ['image', 'folder'];
-
-        if (imageExtensions.includes(item.type)) {
+        if (item.type === 'folder') {
+            navigate(`/file_list?parent_id=${item._id}&parent_name=${item.name}`);
             return;
-            // // Open image in a new tab
-            // window.open(urlGenerate(item.path), "_blank");
-        } else {
-            // For other file types, handle download or other action
-            const token = localStorage.getItem('token');
-            const headers = {
-                Authorization: `Bearer ${token}`,
-            };
-            axios.get(urlGenerate(item.path), { headers, responseType: 'blob' })
-                .then((response) => {
-                    const fileBlob = response.data;
-                    const url = window.URL.createObjectURL(fileBlob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.
-                    a.download = item.name; // Name the file for download
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                })
-                .catch((error) => {
-                    console.error("Error downloading file:", error);
-                });
         }
+
+        if (['image', 'video', 'audio'].includes(item.type)) {
+            window.open(urlGenerate(item.path), "_blank");
+            return;
+        } 
+
+        // For unsupported files, download them
+        const token = localStorage.getItem('token');
+        const headers = { Authorization: `Bearer ${token}` };
+
+        axios.get(urlGenerate(item.path), { headers, responseType: 'blob' })
+            .then((response) => {
+                const fileBlob = response.data;
+                const url = window.URL.createObjectURL(fileBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = item.name; // Set filename for download
+                document.body.appendChild(a); // Append to body (required for Firefox)
+                a.click();
+                document.body.removeChild(a); // Remove after clicking
+                window.URL.revokeObjectURL(url);
+            })
+            .catch((error) => {
+                console.error("Error downloading file:", error);
+            });
+        
     };
+    
 
     return (
         <>
             <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-1">
                 {items && items.map((item, index) => (
                     <div key={index} className="col">
-                        <div className="card p-3 shadow-sm d-flex flex-row align-items-center justify-content-between">
-                            <Link
-                                to={item.type === 'folder' ? `/file_list?parent_id=${item._id}&parent_name=${item.name}` : urlGenerate(item.path)}
-                                className="d-flex align-items-center text-decoration-none text-black"
+                        <div className="card shadow-sm d-flex flex-row align-items-center justify-content-between">
+                            <div
+                                // to={item.type === 'folder' ? `/file_list?parent_id=${item._id}&parent_name=${item.name}` : urlGenerate(item.path)}
+                                className="d-flex p-3 align-items-center text-decoration-none text-black" style={{ cursor: 'pointer' }}
                                 onClick={() => openFile(item)} // Open the file on click
                             >
                                 <ItemIcon type={item.type} />
@@ -238,7 +241,7 @@ export default ({ query }) => {
                                         </small>
                                     }
                                 </div>
-                            </Link>
+                            </div>
                             <details className="dropdown">
                                 <summary className="btn p-1 border-0 bg-transparent text-black">
                                     <ThreeDotsVertical size={20} />
